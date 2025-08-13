@@ -26,6 +26,7 @@ print(f"[VLLM_PATCH] Patch Module loaded in process: {os.getpid()}")
 # All patching code for model runners to handle weight metadata saving
 def _patched_acquire_weight_lock(self, timeout=10):
     """acquire weight metadata saving file lock"""
+    import vllm.distributed.parallel_state as parallel_state_module
     temp_dir = tempfile.gettempdir()
     metadata_dir = os.path.join(temp_dir, "weights_metadata")
     os.makedirs(metadata_dir, exist_ok=True)
@@ -52,6 +53,7 @@ def _patched_acquire_weight_lock(self, timeout=10):
 
 def _patched_release_weight_lock(self):
     """release weight metadata saving file lock"""
+    import vllm.distributed.parallel_state as parallel_state_module
     temp_dir = tempfile.gettempdir()
     metadata_dir = os.path.join(temp_dir, "weights_metadata")
     if hasattr(self, '_lock_fd'):
@@ -99,6 +101,7 @@ def _patched_register_weight_hooks(self):
 
 # Save the model weight metadata to a JSON file
 def _patched_save_weight_meta(self):
+    import vllm.distributed.parallel_state as parallel_state_module
     temp_dir = tempfile.gettempdir()
     metadata_dir = os.path.join(temp_dir, "weights_metadata")
     os.makedirs(metadata_dir, exist_ok=True)
@@ -113,6 +116,7 @@ def _patched_save_weight_meta(self):
         raise
 
 def _patched_save_total_weight_meta(self):
+    import vllm.distributed.parallel_state as parallel_state_module
     # temp_dir = tempfile.gettempdir()
     # metadata_dir = os.path.join(temp_dir, "weights_metadata")
     total_metadata_dir = os.path.join(tempfile.gettempdir(), "total_weights_metadata")
@@ -490,7 +494,7 @@ def apply_vllm_v1_tpu_model_runner_patch():
 def apply_vllm_model_runner_patches():
     print(f"[PATCH] Applying model runner patches in process {os.getpid()}...")
 
-    import vllm.distributed.parallel_state as parallel_state_module
+    # import vllm.distributed.parallel_state as parallel_state_module
 
     apply_vllm_v0_gpu_model_runner_patch()
     # apply_vllm_v0_hpu_model_runner_patch()
