@@ -73,7 +73,17 @@ def _patched_release_weight_lock(self):
 # Weights_hook function 
 def _patched_register_weight_hooks(self):
     # self.weight_infos = {}  # Save weight metadatas
-    self._clear_old_weight_data()
+    # Clear in-memory data
+    if hasattr(self, 'weight_infos'):
+        self.weight_infos.clear()
+    else:
+        self.weight_infos = {}
+
+    if hasattr(self, 'total_weight_dict'):
+        self.total_weight_dict.clear()
+    else:
+        self.total_weight_dict = {}
+    # self._clear_old_weight_data()
 
     def tensor_hook(tensor: torch.Tensor, name: str):
         if tensor.is_cuda:
